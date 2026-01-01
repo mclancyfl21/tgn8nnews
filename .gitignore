@@ -1,0 +1,6 @@
+__pycache__/
+messages.json
+messages_processed.json
+combined_prompt.txt
+brief.html
+.gemini/

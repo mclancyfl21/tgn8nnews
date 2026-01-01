@@ -1,0 +1,232 @@
+{
+  "name": "TG_News",
+  "nodes": [
+    {
+      "parameters": {
+        "function": "arn:aws:lambda:us-west-1:354918405709:function:TG_NewsSender",
+        "payload": "{\"hours_back\": 4}"
+      },
+      "type": "n8n-nodes-base.awsLambda",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        528
+      ],
+      "id": "0337e59f-5651-4280-931b-054e362b1806",
+      "name": "AWS Lambda",
+      "credentials": {
+        "aws": {
+          "id": "bQDHFAlzurkXH9jP",
+          "name": "AWS account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1088,
+        528
+      ],
+      "id": "85e86890-0ba4-467d-bd7a-77c8a9129d12",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "binaryPropertyName": "={{ $json.binary.data }}",
+        "path": "/home/ubuntu/news",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        528
+      ],
+      "id": "f5c08b84-b62c-4d1d-98a9-5a21e00b8943",
+      "name": "Upload a file",
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "rO8GZ3VcP1H6w5q4",
+          "name": "SSH Password account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const messages = $input.first().json;\n\n// Convert your data to JSON string\nconst jsonString = JSON.stringify(messages, null, 2);\n\n// Convert to binary\nconst binaryData = Buffer.from(jsonString, 'utf-8');\n\nreturn {\n  binary: {\n    data: {\n      data: binaryData.toString('base64'),\n      mimeType: 'application/json',\n      fileName: 'messages.json'\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -704,
+        528
+      ],
+      "id": "4eb86e05-6e6c-40e8-b6c0-081d6ba62fd8",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=python3 process_messages.py && bash cat.sh && source ~/.nvm/nvm.sh ; nvm use --lts > /dev/null 2>&1 ; gemini -y < combined_prompt.txt 2>&1 | sed -n '/<\\!DOCTYPE/,$p' > brief.html && echo \"Brief generated at brief.html\"",
+        "cwd": "/home/ubuntu/news"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        528
+      ],
+      "id": "5aae4fca-de6f-4cd1-942d-2af92799bf9e",
+      "name": "Execute a command",
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "rO8GZ3VcP1H6w5q4",
+          "name": "SSH Password account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "matthew@gojaleo.com",
+        "toEmail": "matthew@gojaleo.com",
+        "subject": "Today in News",
+        "html": "={{ $json.stdout }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -32,
+        528
+      ],
+      "id": "c0669a85-c98a-41fc-9300-e933f888c40f",
+      "name": "Send email1",
+      "webhookId": "ccb4d49e-671d-4c9f-8675-727f570bf297",
+      "credentials": {
+        "smtp": {
+          "id": "igy3vShWHffnLc5Q",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "cat brief.html",
+        "cwd": "/home/ubuntu/news/"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        528
+      ],
+      "id": "aa5d4d56-9d73-48a3-9fd5-3cd5f2543ce8",
+      "name": "Execute a command2",
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "rO8GZ3VcP1H6w5q4",
+          "name": "SSH Password account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AWS Lambda": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AWS Lambda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a file": {
+      "main": [
+        [
+          {
+            "node": "Execute a command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Upload a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a command": {
+      "main": [
+        [
+          {
+            "node": "Execute a command2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email1": {
+      "main": [
+        []
+      ]
+    },
+    "Execute a command2": {
+      "main": [
+        [
+          {
+            "node": "Send email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "67142477-b1ec-4f05-bc7c-2411dc0f9f5c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ad350e49f30d0d357cf3cf45635eae826ac25de6c9b84a6dc9853836412fd7e0"
+  },
+  "id": "HZEUhVBvnL2oXSYZ",
+  "tags": []
+}
