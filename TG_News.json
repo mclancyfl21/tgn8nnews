@@ -9,8 +9,8 @@
       "type": "n8n-nodes-base.awsLambda",
       "typeVersion": 1,
       "position": [
-        -880,
-        528
+        -1392,
+        560
       ],
       "id": "0337e59f-5651-4280-931b-054e362b1806",
       "name": "AWS Lambda",
@@ -35,8 +35,8 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        -1088,
-        528
+        -1600,
+        560
       ],
       "id": "85e86890-0ba4-467d-bd7a-77c8a9129d12",
       "name": "Schedule Trigger"
@@ -52,8 +52,8 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        -528,
-        528
+        -1040,
+        560
       ],
       "id": "f5c08b84-b62c-4d1d-98a9-5a21e00b8943",
       "name": "Upload a file",
@@ -71,8 +71,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -704,
-        528
+        -1216,
+        560
       ],
       "id": "4eb86e05-6e6c-40e8-b6c0-081d6ba62fd8",
       "name": "Code in JavaScript"
@@ -86,8 +86,8 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        -368,
-        528
+        -880,
+        560
       ],
       "id": "5aae4fca-de6f-4cd1-942d-2af92799bf9e",
       "name": "Execute a command",
@@ -109,8 +109,8 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        -32,
-        528
+        -544,
+        560
       ],
       "id": "c0669a85-c98a-41fc-9300-e933f888c40f",
       "name": "Send email1",
@@ -131,11 +131,32 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        -192,
-        528
+        -704,
+        560
       ],
       "id": "aa5d4d56-9d73-48a3-9fd5-3cd5f2543ce8",
       "name": "Execute a command2",
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "rO8GZ3VcP1H6w5q4",
+          "name": "SSH Password account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "rm  messages.json messages_processed.json combined_prompt.txt brief.html",
+        "cwd": "/home/ubuntu/news"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        560
+      ],
+      "id": "fe93bdf4-380b-4cff-9305-b431429f2a1a",
+      "name": "Execute a command1",
       "credentials": {
         "sshPrivateKey": {
           "id": "rO8GZ3VcP1H6w5q4",
@@ -203,7 +224,13 @@
     },
     "Send email1": {
       "main": [
-        []
+        [
+          {
+            "node": "Execute a command1",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Execute a command2": {
@@ -222,7 +249,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "67142477-b1ec-4f05-bc7c-2411dc0f9f5c",
+  "versionId": "bba4c3d2-180f-42b8-a941-ac2a9f1c49dd",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "ad350e49f30d0d357cf3cf45635eae826ac25de6c9b84a6dc9853836412fd7e0"
